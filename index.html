@@ -258,14 +258,15 @@
   @keyframes pulseBlank { 0%,100% { box-shadow: 0 0 0 0 rgba(108,92,231,0.3); } 50% { box-shadow: 0 0 0 8px rgba(108,92,231,0); } }
   .confetti-piece { position: fixed; z-index: 200; pointer-events: none; }
 
-  /* Portrait warning for very narrow screens */
-  @media (max-width: 700px) and (orientation: portrait) {
-    body::after {
-      content: '📱 請將裝置轉為橫向使用';
-      position: fixed; inset: 0; background: rgba(0,0,0,0.85); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5em; font-weight: 700; z-index: 9999; letter-spacing: 2px;
-    }
+  /* Responsive for portrait / narrow screens */
+  @media (max-width: 700px) {
+    html, body { overflow: auto; height: auto; }
+    #game-screen { height: auto; min-height: 100vh; }
+    .main-area { flex-direction: column; }
+    .left-panel { flex: none; }
+    .passage-area { font-size: 1.1em; line-height: 2; }
+    .verb-btn { padding: 7px 14px; font-size: 1em; }
+    .blank-slot { min-width: 60px; height: 38px; }
   }
 </style>
 </head>
