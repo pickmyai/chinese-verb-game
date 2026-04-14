@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>動詞小達人 — 中文填詞挑戰</title>
+<title>動詞小達人 — 描寫性格特徵</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 
@@ -18,606 +18,321 @@
     --pink: #FD79A8;
     --dark: #2D3436;
     --light: #F8F9FA;
-    --card-shadow: 0 8px 32px rgba(0,0,0,0.12);
   }
 
-  body {
+  html, body {
     font-family: 'Noto Sans TC', sans-serif;
+    height: 100%;
+    overflow: hidden;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
   }
 
-  /* ── Floating Bubbles Background ── */
-  .bubbles {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
+  /* ── Floating Bubbles ── */
+  .bubbles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
   .bubble {
-    position: absolute;
-    border-radius: 50%;
-    opacity: 0.15;
+    position: absolute; border-radius: 50%; opacity: 0.12;
     animation: floatUp linear infinite;
   }
   @keyframes floatUp {
     0% { transform: translateY(100vh) scale(0); opacity: 0; }
-    10% { opacity: 0.15; }
-    90% { opacity: 0.15; }
+    10% { opacity: 0.12; } 90% { opacity: 0.12; }
     100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-  }
-
-  /* ── Container ── */
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    position: relative;
-    z-index: 1;
   }
 
   /* ── Welcome Screen ── */
   #welcome-screen {
-    text-align: center;
-    padding: 60px 20px;
-    animation: fadeInUp 0.8s ease;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100vh; text-align: center; animation: fadeInUp 0.8s ease; position: relative; z-index: 1;
   }
-  #welcome-screen .mascot {
-    font-size: 100px;
-    animation: bounce 2s ease infinite;
-    display: block;
-    margin-bottom: 10px;
-  }
+  .mascot { font-size: 90px; animation: bounce 2s ease infinite; }
   #welcome-screen h1 {
-    font-size: 3em;
-    font-weight: 900;
-    color: #fff;
-    text-shadow: 3px 3px 0 rgba(0,0,0,0.15);
-    margin-bottom: 10px;
-    letter-spacing: 4px;
+    font-size: 3.2em; font-weight: 900; color: #fff;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.15); letter-spacing: 6px; margin: 8px 0;
   }
-  #welcome-screen .subtitle {
-    font-size: 1.3em;
-    color: rgba(255,255,255,0.9);
-    margin-bottom: 40px;
-  }
+  .subtitle { font-size: 1.3em; color: rgba(255,255,255,0.9); margin-bottom: 30px; }
   .start-btn {
-    display: inline-block;
-    padding: 18px 60px;
-    font-size: 1.5em;
-    font-weight: 700;
-    color: var(--primary);
-    background: #fff;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    transition: all 0.3s;
-    font-family: inherit;
-    letter-spacing: 2px;
+    padding: 16px 56px; font-size: 1.4em; font-weight: 700; color: var(--primary);
+    background: #fff; border: none; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2); transition: all 0.3s; font-family: inherit; letter-spacing: 2px;
   }
-  .start-btn:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+  .start-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 12px 35px rgba(0,0,0,0.25); }
+
+  /* ── Game Screen (landscape) ── */
+  #game-screen {
+    display: none; height: 100vh; padding: 14px 20px;
+    flex-direction: column; position: relative; z-index: 1;
   }
+  #game-screen.active { display: flex; }
 
-  /* ── Game Screen ── */
-  #game-screen { display: none; animation: fadeInUp 0.6s ease; }
-
-  /* Header Bar */
-  .game-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding: 12px 20px;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
+  /* Top bar */
+  .top-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 16px; margin-bottom: 10px;
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 14px;
+    flex-shrink: 0;
   }
   .level-badge {
-    background: var(--accent);
-    color: var(--dark);
-    padding: 6px 18px;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 1em;
+    background: var(--accent); color: var(--dark);
+    padding: 4px 16px; border-radius: 20px; font-weight: 700; font-size: 0.95em; white-space: nowrap;
   }
-  .score-display {
-    color: #fff;
-    font-weight: 700;
-    font-size: 1.1em;
+  .progress-wrap {
+    flex: 1; height: 8px; background: rgba(255,255,255,0.25); border-radius: 8px; overflow: hidden;
   }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--danger));
+    border-radius: 8px; transition: width 0.5s ease;
+  }
+  .score-display { color: #fff; font-weight: 700; font-size: 1em; white-space: nowrap; }
   .score-display .star { color: var(--accent); }
-  .progress-bar-wrap {
-    flex: 1;
-    margin: 0 15px;
-    height: 10px;
-    background: rgba(255,255,255,0.25);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--danger));
-    border-radius: 10px;
-    transition: width 0.5s ease;
+
+  /* Main area — two-column */
+  .main-area {
+    flex: 1; display: flex; gap: 16px; min-height: 0; overflow: hidden;
   }
 
-  /* Main Card */
-  .game-card {
-    background: #fff;
-    border-radius: 24px;
-    box-shadow: var(--card-shadow);
-    overflow: hidden;
-    margin-bottom: 20px;
+  /* Left Panel */
+  .left-panel {
+    flex: 0 0 38%; display: flex; flex-direction: column; gap: 12px; min-height: 0;
+  }
+  .task-card {
+    background: linear-gradient(135deg, #2d3436, #636e72); color: #fff;
+    border-radius: 18px; padding: 18px 22px; flex-shrink: 0;
+  }
+  .coach-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent); color: var(--dark);
+    padding: 3px 12px; border-radius: 16px; font-weight: 700; font-size: 0.85em; margin-bottom: 8px;
+  }
+  .task-text { font-size: 1.05em; line-height: 1.7; }
+  .keyword {
+    display: inline-block; background: var(--accent); color: var(--dark);
+    padding: 1px 8px; border-radius: 5px; font-weight: 700;
   }
 
-  /* Task Section */
-  .task-section {
-    background: linear-gradient(135deg, #2d3436, #636e72);
-    color: #fff;
-    padding: 20px 28px;
-    position: relative;
-  }
-  .task-section .coach-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--accent);
-    color: var(--dark);
-    padding: 5px 14px;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 0.9em;
-    margin-bottom: 10px;
-  }
-  .task-section .coach-badge .emoji { font-size: 1.2em; }
-  .task-section .task-text {
-    font-size: 1.15em;
-    line-height: 1.7;
-  }
-  .task-section .keyword {
-    display: inline-block;
-    background: var(--accent);
-    color: var(--dark);
-    padding: 2px 10px;
-    border-radius: 6px;
-    font-weight: 700;
-  }
-
-  /* Verb Toolbox */
-  .toolbox-section {
-    padding: 22px 28px;
-    border-bottom: 3px dashed #eee;
+  .toolbox-card {
+    background: #fff; border-radius: 18px; padding: 16px 20px;
+    flex: 1; min-height: 0; overflow-y: auto;
   }
   .toolbox-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
-    font-size: 1.05em;
-    color: var(--dark);
-    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 6px;
+    font-weight: 700; font-size: 0.95em; color: var(--dark); margin-bottom: 12px;
   }
   .toolbox-label .icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px; height: 30px;
-    background: var(--primary);
-    color: #fff;
-    border-radius: 8px;
-    font-size: 1em;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; background: var(--primary); color: #fff; border-radius: 7px; font-size: 0.85em;
   }
-  .verb-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
+  .verb-grid { display: flex; flex-wrap: wrap; gap: 8px; }
   .verb-btn {
-    padding: 10px 22px;
-    font-size: 1.15em;
-    font-weight: 700;
-    border: 3px solid transparent;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.25s;
-    font-family: inherit;
-    letter-spacing: 2px;
-    position: relative;
-    user-select: none;
+    padding: 9px 20px; font-size: 1.1em; font-weight: 700; border: 3px solid transparent;
+    border-radius: 12px; cursor: pointer; transition: all 0.25s; font-family: inherit;
+    letter-spacing: 2px; user-select: none;
   }
-  .verb-btn:hover:not(.used):not(.selected) {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  }
-  .verb-btn.selected {
-    transform: scale(1.1);
-    box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--dark);
-    z-index: 2;
-  }
-  .verb-btn.used {
-    opacity: 0.3;
-    cursor: default;
-    transform: scale(0.95);
-  }
+  .verb-btn:hover:not(.used):not(.selected) { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+  .verb-btn.selected { transform: scale(1.1); box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--dark); z-index: 2; }
+  .verb-btn.used { opacity: 0.3; cursor: default; transform: scale(0.95); }
+  .vc0 { background: #FF6B6B; color: #fff; }
+  .vc1 { background: #4ECDC4; color: #fff; }
+  .vc2 { background: #45B7D1; color: #fff; }
+  .vc3 { background: #96CEB4; color: var(--dark); }
+  .vc4 { background: #FECA57; color: var(--dark); }
+  .vc5 { background: #FF9FF3; color: var(--dark); }
+  .vc6 { background: #54A0FF; color: #fff; }
+  .vc7 { background: #F97F51; color: #fff; }
 
-  /* Verb colors */
-  .verb-color-0 { background: #FF6B6B; color: #fff; }
-  .verb-color-1 { background: #4ECDC4; color: #fff; }
-  .verb-color-2 { background: #45B7D1; color: #fff; }
-  .verb-color-3 { background: #96CEB4; color: var(--dark); }
-  .verb-color-4 { background: #FECA57; color: var(--dark); }
-  .verb-color-5 { background: #FF9FF3; color: var(--dark); }
-  .verb-color-6 { background: #54A0FF; color: #fff; }
-  .verb-color-7 { background: #F97F51; color: #fff; }
-
-  /* Passage Section */
-  .passage-section {
-    padding: 28px;
+  /* Right Panel */
+  .right-panel {
+    flex: 1; display: flex; flex-direction: column; gap: 12px; min-height: 0;
+  }
+  .passage-card {
+    background: #fff; border-radius: 18px; padding: 24px 28px;
+    flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; justify-content: center;
   }
   .passage-area {
-    background: #f8f9fa;
-    border-radius: 16px;
-    padding: 24px;
-    font-size: 1.25em;
-    line-height: 2.2;
-    color: var(--dark);
-    border: 2px solid #eee;
-    position: relative;
-  }
-  .passage-area .quote-mark {
-    color: var(--primary);
-    font-size: 1.4em;
-    font-weight: 900;
+    background: #f8f9fa; border-radius: 14px; padding: 22px;
+    font-size: 1.3em; line-height: 2.4; color: var(--dark); border: 2px solid #eee;
   }
   .blank-slot {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 72px;
-    height: 42px;
-    border: 3px dashed var(--primary);
-    border-radius: 10px;
-    margin: 0 4px;
-    padding: 0 10px;
-    cursor: pointer;
-    transition: all 0.3s;
-    vertical-align: middle;
-    position: relative;
-    background: rgba(108, 92, 231, 0.06);
-    font-weight: 700;
-    font-size: 0.95em;
-    letter-spacing: 2px;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 72px; height: 42px; border: 3px dashed var(--primary); border-radius: 10px;
+    margin: 0 3px; padding: 0 10px; cursor: pointer; transition: all 0.3s;
+    vertical-align: middle; position: relative; background: rgba(108,92,231,0.06);
+    font-weight: 700; font-size: 0.9em; letter-spacing: 2px;
   }
-  .blank-slot:hover {
-    border-color: var(--danger);
-    background: rgba(225, 112, 85, 0.08);
-  }
-  .blank-slot.filled {
-    border-style: solid;
-    background: var(--primary);
-    color: #fff;
-    border-color: var(--primary);
-    animation: popIn 0.3s ease;
-  }
-  .blank-slot.correct {
-    background: var(--secondary) !important;
-    border-color: var(--secondary) !important;
-    animation: correctPulse 0.6s ease;
-  }
-  .blank-slot.wrong {
-    background: var(--danger) !important;
-    border-color: var(--danger) !important;
-    animation: shake 0.5s ease;
-  }
+  .blank-slot:hover { border-color: var(--danger); background: rgba(225,112,85,0.08); }
+  .blank-slot.filled { border-style: solid; background: var(--primary); color: #fff; border-color: var(--primary); animation: popIn 0.3s ease; }
+  .blank-slot.correct { background: var(--secondary) !important; border-color: var(--secondary) !important; animation: correctPulse 0.6s ease; }
+  .blank-slot.wrong { background: var(--danger) !important; border-color: var(--danger) !important; animation: shake 0.5s ease; }
   .blank-slot .blank-num {
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    width: 22px; height: 22px;
-    background: var(--accent);
-    color: var(--dark);
-    border-radius: 50%;
-    font-size: 0.65em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
+    position: absolute; top: -10px; left: -10px;
+    width: 20px; height: 20px; background: var(--accent); color: var(--dark);
+    border-radius: 50%; font-size: 0.6em; display: flex; align-items: center; justify-content: center; font-weight: 900;
   }
-  .blank-slot.pulse {
-    animation: pulseBlank 1.5s ease infinite;
-  }
+  .blank-slot.pulse { animation: pulseBlank 1.5s ease infinite; }
 
-  /* Goal Section */
-  .goal-section {
-    padding: 14px 28px;
+  .goal-bar {
     background: linear-gradient(90deg, #dfe6e9, #b2bec3);
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    padding: 10px 20px; border-radius: 12px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;
   }
-  .goal-section .goal-icon {
-    font-size: 1.2em;
-  }
-  .goal-section .goal-text {
-    font-size: 0.95em;
-    color: var(--dark);
-    font-weight: 500;
-  }
+  .goal-bar .goal-text { font-size: 0.9em; color: var(--dark); font-weight: 500; }
 
-  /* Action Buttons */
-  .action-row {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
+  /* Bottom Nav */
+  .bottom-nav {
+    display: flex; justify-content: center; align-items: center; gap: 12px;
+    padding: 10px 0 4px; flex-shrink: 0;
   }
-  .check-btn, .next-btn, .reset-btn, .hint-btn {
-    padding: 14px 36px;
-    font-size: 1.15em;
-    font-weight: 700;
-    border: none;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-family: inherit;
-    letter-spacing: 1px;
+  .nav-btn {
+    padding: 10px 30px; font-size: 1.05em; font-weight: 700; border: none; border-radius: 12px;
+    cursor: pointer; transition: all 0.3s; font-family: inherit; letter-spacing: 1px;
   }
-  .check-btn {
-    background: linear-gradient(135deg, var(--primary), #a29bfe);
-    color: #fff;
-    box-shadow: 0 4px 15px rgba(108,92,231,0.4);
+  .nav-btn:hover:not(:disabled) { transform: translateY(-2px); }
+  .nav-btn:disabled { opacity: 0.4; cursor: default; }
+  .btn-prev {
+    background: rgba(255,255,255,0.2); color: #fff; backdrop-filter: blur(5px); border: 2px solid rgba(255,255,255,0.3);
   }
-  .check-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(108,92,231,0.5); }
-  .check-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
-  .next-btn {
-    background: linear-gradient(135deg, var(--secondary), #55efc4);
-    color: #fff;
+  .btn-reset {
+    background: rgba(255,255,255,0.2); color: #fff; backdrop-filter: blur(5px); border: 2px solid rgba(255,255,255,0.3);
+  }
+  .btn-check {
+    background: linear-gradient(135deg, var(--primary), #a29bfe); color: #fff;
+    box-shadow: 0 4px 15px rgba(108,92,231,0.4); padding: 10px 40px;
+  }
+  .btn-next {
+    background: linear-gradient(135deg, var(--secondary), #55efc4); color: #fff;
     box-shadow: 0 4px 15px rgba(0,184,148,0.4);
-    display: none;
   }
-  .next-btn:hover { transform: translateY(-2px); }
-  .reset-btn {
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-    backdrop-filter: blur(5px);
-    border: 2px solid rgba(255,255,255,0.3);
+  .level-dots {
+    display: flex; gap: 6px; align-items: center;
   }
-  .reset-btn:hover { background: rgba(255,255,255,0.3); }
-  .hint-btn {
-    background: linear-gradient(135deg, var(--accent), #f9ca24);
-    color: var(--dark);
-    box-shadow: 0 4px 15px rgba(253,203,110,0.4);
-    padding: 14px 24px;
+  .dot {
+    width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: all 0.3s;
   }
-  .hint-btn:hover { transform: translateY(-2px); }
-  .hint-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+  .dot.active { background: var(--accent); transform: scale(1.3); }
+  .dot.done { background: var(--secondary); }
 
-  /* Result Screen */
-  #result-screen {
-    display: none;
-    text-align: center;
-    padding: 60px 20px;
-    animation: fadeInUp 0.8s ease;
-  }
-  #result-screen .trophy { font-size: 100px; animation: bounce 2s ease infinite; display: block; margin-bottom: 10px; }
-  #result-screen h2 {
-    font-size: 2.5em;
-    color: #fff;
-    text-shadow: 3px 3px 0 rgba(0,0,0,0.15);
-    margin-bottom: 10px;
-  }
-  #result-screen .final-score {
-    font-size: 1.5em;
-    color: var(--accent);
-    margin-bottom: 10px;
-    font-weight: 700;
-  }
-  .stars-display { font-size: 3em; margin: 15px 0; }
-  .stars-display .star-empty { opacity: 0.3; }
-  #result-screen .result-detail {
-    color: rgba(255,255,255,0.85);
-    font-size: 1.1em;
-    margin-bottom: 30px;
-    line-height: 1.8;
-  }
-
-  /* Feedback Modal */
+  /* ── Feedback Modal ── */
   .feedback-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 100; align-items: center; justify-content: center;
   }
   .feedback-overlay.show { display: flex; }
   .feedback-card {
-    background: #fff;
-    border-radius: 24px;
-    padding: 36px;
-    max-width: 500px;
-    width: 90%;
-    text-align: center;
-    animation: popIn 0.4s ease;
+    background: #fff; border-radius: 22px; padding: 32px; max-width: 480px; width: 90%;
+    text-align: center; animation: popIn 0.4s ease;
   }
-  .feedback-card .fb-icon { font-size: 60px; margin-bottom: 10px; }
-  .feedback-card h3 { font-size: 1.5em; margin-bottom: 8px; }
-  .feedback-card p { color: #636e72; font-size: 1em; margin-bottom: 5px; line-height: 1.6; }
-  .feedback-card .fb-detail {
-    margin-top: 12px;
-    padding: 14px;
-    background: #f8f9fa;
-    border-radius: 12px;
-    text-align: left;
-    font-size: 0.95em;
-    line-height: 1.8;
+  .fb-icon { font-size: 56px; margin-bottom: 8px; }
+  .feedback-card h3 { font-size: 1.4em; margin-bottom: 6px; }
+  .feedback-card p { color: #636e72; font-size: 0.95em; line-height: 1.6; }
+  .fb-detail {
+    margin-top: 10px; padding: 12px; background: #f8f9fa; border-radius: 10px;
+    text-align: left; font-size: 0.92em; line-height: 1.8;
   }
-  .feedback-card .fb-detail .correct-mark { color: var(--secondary); font-weight: 700; }
-  .feedback-card .fb-detail .wrong-mark { color: var(--danger); font-weight: 700; }
-  .feedback-card .fb-btn {
-    margin-top: 18px;
-    padding: 12px 40px;
-    font-size: 1.1em;
-    font-weight: 700;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.3s;
+  .correct-mark { color: var(--secondary); font-weight: 700; }
+  .wrong-mark { color: var(--danger); font-weight: 700; }
+  .fb-btn {
+    margin-top: 14px; padding: 10px 36px; font-size: 1.05em; font-weight: 700;
+    border: none; border-radius: 10px; cursor: pointer; font-family: inherit; transition: all 0.3s;
   }
+  .fb-btn:hover { transform: translateY(-2px); }
   .fb-btn-success { background: var(--secondary); color: #fff; }
   .fb-btn-retry { background: var(--danger); color: #fff; }
-  .fb-btn-success:hover, .fb-btn-retry:hover { transform: translateY(-2px); }
 
-  /* Hint popup */
-  .hint-popup {
-    display: none;
-    position: fixed;
-    bottom: 100px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--accent);
-    color: var(--dark);
-    padding: 14px 28px;
-    border-radius: 14px;
-    font-weight: 700;
-    font-size: 1.05em;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    z-index: 50;
-    animation: fadeInUp 0.3s ease;
-    max-width: 90%;
-    text-align: center;
+  /* ── Result Screen ── */
+  #result-screen {
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    height: 100vh; text-align: center; animation: fadeInUp 0.8s ease; position: relative; z-index: 1;
   }
-  .hint-popup.show { display: block; }
-
-  /* Confetti */
-  .confetti-piece {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    z-index: 200;
-    pointer-events: none;
-  }
+  #result-screen.active { display: flex; }
+  .trophy { font-size: 90px; animation: bounce 2s ease infinite; }
+  #result-screen h2 { font-size: 2.5em; color: #fff; text-shadow: 3px 3px 0 rgba(0,0,0,0.15); margin: 8px 0; }
+  .final-score { font-size: 1.4em; color: var(--accent); font-weight: 700; }
+  .stars-display { font-size: 2.8em; margin: 10px 0; }
+  .star-empty { opacity: 0.3; }
+  .result-detail { color: rgba(255,255,255,0.85); font-size: 1.05em; margin-bottom: 24px; line-height: 1.8; }
 
   /* ── Animations ── */
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
-  }
-  @keyframes popIn {
-    0% { transform: scale(0.5); opacity: 0; }
-    70% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-8px); }
-    75% { transform: translateX(8px); }
-  }
-  @keyframes correctPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.15); }
-    100% { transform: scale(1); }
-  }
-  @keyframes pulseBlank {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(108,92,231,0.3); }
-    50% { box-shadow: 0 0 0 8px rgba(108,92,231,0); }
-  }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  @keyframes correctPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+  @keyframes pulseBlank { 0%,100% { box-shadow: 0 0 0 0 rgba(108,92,231,0.3); } 50% { box-shadow: 0 0 0 8px rgba(108,92,231,0); } }
+  .confetti-piece { position: fixed; z-index: 200; pointer-events: none; }
 
-  /* ── Responsive ── */
-  @media (max-width: 600px) {
-    #welcome-screen h1 { font-size: 2em; }
-    #welcome-screen .mascot { font-size: 70px; }
-    .task-section, .toolbox-section, .passage-section { padding: 16px 18px; }
-    .passage-area { font-size: 1.1em; padding: 16px; }
-    .verb-btn { padding: 8px 16px; font-size: 1em; }
-    .blank-slot { min-width: 60px; height: 36px; }
-    .check-btn, .next-btn, .reset-btn, .hint-btn { padding: 12px 24px; font-size: 1em; }
-    #result-screen h2 { font-size: 1.8em; }
-    .game-header { flex-wrap: wrap; gap: 8px; }
-    .progress-bar-wrap { order: 3; flex-basis: 100%; margin: 5px 0 0 0; }
+  /* Portrait warning for very narrow screens */
+  @media (max-width: 700px) and (orientation: portrait) {
+    body::after {
+      content: '📱 請將裝置轉為橫向使用';
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5em; font-weight: 700; z-index: 9999; letter-spacing: 2px;
+    }
   }
 </style>
 </head>
 <body>
 
-<!-- Floating Bubbles -->
 <div class="bubbles" id="bubbles"></div>
 
-<!-- ====== WELCOME SCREEN ====== -->
-<div class="container">
-  <div id="welcome-screen">
-    <span class="mascot">🏫</span>
-    <h1>動詞小達人</h1>
-    <p class="subtitle">中文填詞大挑戰<br>選出最合適的動詞，完成精彩段落！</p>
-    <button class="start-btn" onclick="startGame()">開始挑戰 ➜</button>
+<!-- ====== WELCOME ====== -->
+<div id="welcome-screen">
+  <span class="mascot">🏫</span>
+  <h1>動詞小達人</h1>
+  <p class="subtitle">性格特徵描寫大挑戰<br>選出最合適的動詞，寫活人物性格！</p>
+  <button class="start-btn" onclick="startGame()">開始挑戰 ➜</button>
+</div>
+
+<!-- ====== GAME ====== -->
+<div id="game-screen">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <span class="level-badge" id="level-badge">第 1 關</span>
+    <div class="level-dots" id="level-dots"></div>
+    <div class="progress-wrap"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <span class="score-display"><span class="star">★</span> <span id="score-num">0</span> 分</span>
   </div>
 
-  <!-- ====== GAME SCREEN ====== -->
-  <div id="game-screen">
-    <!-- Header -->
-    <div class="game-header">
-      <span class="level-badge" id="level-badge">第 1 關</span>
-      <div class="progress-bar-wrap">
-        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
-      </div>
-      <span class="score-display"><span class="star">★</span> <span id="score-num">0</span> 分</span>
-    </div>
-
-    <!-- Main Card -->
-    <div class="game-card">
-      <!-- Task -->
-      <div class="task-section">
-        <div class="coach-badge"><span class="emoji">📝</span> 小作家任務</div>
+  <!-- Main Two-Column -->
+  <div class="main-area">
+    <!-- Left -->
+    <div class="left-panel">
+      <div class="task-card">
+        <div class="coach-badge"><span>📝</span> 小作家任務</div>
         <div class="task-text" id="task-text"></div>
       </div>
-      <!-- Toolbox -->
-      <div class="toolbox-section">
+      <div class="toolbox-card">
         <div class="toolbox-label"><span class="icon">🔧</span> 動詞工具箱</div>
         <div class="verb-grid" id="verb-grid"></div>
       </div>
-      <!-- Passage -->
-      <div class="passage-section">
+    </div>
+    <!-- Right -->
+    <div class="right-panel">
+      <div class="passage-card">
         <div class="passage-area" id="passage-area"></div>
       </div>
-      <!-- Goal -->
-      <div class="goal-section">
-        <span class="goal-icon">🎯</span>
+      <div class="goal-bar">
+        <span>🎯</span>
         <span class="goal-text" id="goal-text"></span>
       </div>
     </div>
-
-    <!-- Actions -->
-    <div class="action-row">
-      <button class="hint-btn" id="hint-btn" onclick="showHint()">💡 提示</button>
-      <button class="reset-btn" onclick="resetLevel()">🔄 重置</button>
-      <button class="check-btn" id="check-btn" onclick="checkAnswers()" disabled>✅ 提交答案</button>
-      <button class="next-btn" id="next-btn" onclick="nextLevel()">下一關 ➜</button>
-    </div>
   </div>
 
-  <!-- ====== RESULT SCREEN ====== -->
-  <div id="result-screen">
-    <span class="trophy">🏆</span>
-    <h2>挑戰完成！</h2>
-    <div class="final-score" id="final-score"></div>
-    <div class="stars-display" id="final-stars"></div>
-    <div class="result-detail" id="result-detail"></div>
-    <button class="start-btn" onclick="restartGame()">再玩一次 🔁</button>
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="nav-btn btn-prev" id="btn-prev" onclick="prevLevel()">⬅ 上一題</button>
+    <button class="nav-btn btn-reset" onclick="resetLevel()">🔄 重置</button>
+    <button class="nav-btn btn-check" id="btn-check" onclick="checkAnswers()" disabled>✅ 提交答案</button>
+    <button class="nav-btn btn-next" id="btn-next" onclick="nextLevel()" style="display:none">下一題 ➜</button>
   </div>
+</div>
+
+<!-- ====== RESULT ====== -->
+<div id="result-screen">
+  <span class="trophy">🏆</span>
+  <h2>挑戰完成！</h2>
+  <div class="final-score" id="final-score"></div>
+  <div class="stars-display" id="final-stars"></div>
+  <div class="result-detail" id="result-detail"></div>
+  <button class="start-btn" onclick="restartGame()">再玩一次 🔁</button>
 </div>
 
 <!-- Feedback Overlay -->
@@ -625,158 +340,126 @@
   <div class="feedback-card" id="feedback-card"></div>
 </div>
 
-<!-- Hint Popup -->
-<div class="hint-popup" id="hint-popup"></div>
-
 <script>
 // ══════════════════════════════════════════
-//  LEVEL DATA
+//  LEVEL DATA — 性格特徵描寫
 // ══════════════════════════════════════════
 const levels = [
   {
-    title: "暴風雨中趕路",
-    task: '任務：描寫一個在暴風雨中趕回家的人，表現出<span class="keyword">焦急</span>的心情。',
-    goal: "目標：讓讀者感受到暴風雨的猛烈和趕路人的焦急！",
-    verbs: ["奔跑","搖晃","呼嘯","閃爍","顫抖","凝視","飄散","敲打"],
+    title: "堅毅",
+    task: '任務：描寫一個練跑時不斷跌倒又爬起來的運動員，表現出<span class="keyword">堅毅</span>的性格。',
+    goal: "目標：讓讀者感受到運動員永不放棄的堅毅精神！",
+    verbs: ["咬緊","跌倒","攀爬","揮灑","喘息","癱坐","撐起","放棄"],
     segments: [
-      "「暴風雨來了！他在雨中拼命地",
-      "，狂風在耳邊不停地",
-      "，全身被淋濕，忍不住",
-      "起來。」"
+      "「比賽途中，他不小心",
+      "在跑道上，但他立刻",
+      "身體，",
+      "牙關繼續向終點衝去。」"
     ],
-    answers: ["奔跑","呼嘯","顫抖"],
-    hints: [
-      "第①格：人在雨中急著趕路，會用腳做什麼動作？",
-      "第②格：風發出的聲音，像是在「叫」一樣……",
-      "第③格：淋濕後身體會不自覺地……？"
-    ]
+    answers: ["跌倒","撐起","咬緊"]
   },
   {
-    title: "廚房大展身手",
-    task: '任務：描寫一位在廚房大展身手的廚師，表現出<span class="keyword">熟練</span>的技術。',
-    goal: "目標：讓讀者彷彿聞到廚房裡的陣陣香味！",
-    verbs: ["翻炒","攪拌","切碎","瀰漫","灑落","凝望","品嚐","燉煮"],
+    title: "善良",
+    task: '任務：描寫一個主動幫助迷路老婆婆的同學，表現出<span class="keyword">善良</span>的性格。',
+    goal: "目標：讓讀者感受到同學溫暖、體貼的善心！",
+    verbs: ["攙扶","牽領","詢問","注視","陪伴","招呼","指引","安慰"],
     segments: [
-      "「廚師先俐落地",
-      "了蔬菜和肉片，接著熟練地",
-      "鍋中的食材，不一會兒，陣陣香味就在廚房裡",
-      "開來。」"
+      "「小芳看到路邊迷路的老婆婆，連忙走上前",
+      "情況，然後輕輕地",
+      "著她，一路",
+      "她走到家門口。」"
     ],
-    answers: ["切碎","翻炒","瀰漫"],
-    hints: [
-      "第①格：把蔬菜變成小塊的動作是……",
-      "第②格：鍋鏟在鍋裡上下左右的動作叫……",
-      "第③格：香味在空氣中慢慢散開，可以用哪個詞？"
-    ]
+    answers: ["詢問","攙扶","陪伴"]
   },
   {
-    title: "考場上的緊張",
-    task: '任務：描寫一個在考試中緊張作答的學生，表現出<span class="keyword">專注</span>。',
-    goal: "目標：讓讀者感受到考場上分秒必爭的緊張氣氛！",
-    verbs: ["書寫","思索","塗改","翻閱","嘆息","抖動","瞪視","默念"],
+    title: "勇敢",
+    task: '任務：描寫一個在颱風天救出被困小貓的同學，表現出<span class="keyword">勇敢</span>的性格。',
+    goal: "目標：讓讀者看見他不顧危險也要幫助弱小的勇氣！",
+    verbs: ["衝進","抱緊","躲避","呼喊","顫抖","鑽入","安撫","搖晃"],
     segments: [
-      "「考試鈴聲響起，小華拿起筆飛快地",
-      "，遇到不會的題目就停下來認真",
-      "，發現寫錯了連忙用力",
-      "。」"
+      "「聽到小貓的叫聲，他不顧狂風暴雨，",
+      "了巷子裡，小心翼翼地把小貓",
+      "在懷中，輕聲地",
+      "牠的不安。」"
     ],
-    answers: ["書寫","思索","塗改"],
-    hints: [
-      "第①格：筆在紙上快速移動的動作……",
-      "第②格：腦袋裡認真想問題的動作……",
-      "第③格：把寫錯的字改掉的動作……"
-    ]
+    answers: ["衝進","抱緊","安撫"]
   },
   {
-    title: "公園裡的歡笑",
-    task: '任務：描寫一群小朋友在公園裡快樂玩耍，表現出<span class="keyword">歡樂</span>。',
-    goal: "目標：讓讀者看到一幅充滿歡笑的公園畫面！",
-    verbs: ["嬉戲","追逐","攀爬","跳躍","搖擺","喘息","奔跑","觀望"],
+    title: "細心",
+    task: '任務：描寫一個照顧生病同學的班長，表現出<span class="keyword">細心</span>的性格。',
+    goal: "目標：讓讀者感受到班長無微不至的關懷！",
+    verbs: ["觸摸","遞上","叮嚀","觀察","覆蓋","催促","記錄","張望"],
     segments: [
-      "「放學後，小朋友們在草地上開心地",
-      "，他們互相",
-      "，笑聲不斷，有的還勇敢地",
-      "到大樹上看遠處的風景。」"
+      "「小班長發現同學臉色蒼白，馬上用手",
+      "他的額頭，然後",
+      "一杯溫水，還不斷",
+      "他要好好休息。」"
     ],
-    answers: ["嬉戲","追逐","攀爬"],
-    hints: [
-      "第①格：小朋友們一起快樂地玩，可以用哪個詞？",
-      "第②格：你追我跑的動作叫……",
-      "第③格：手腳並用往上爬的動作是……"
-    ]
+    answers: ["觸摸","遞上","叮嚀"]
   },
   {
-    title: "深夜苦讀",
-    task: '任務：描寫一個深夜還在用功的中學生，表現出<span class="keyword">堅持</span>。',
-    goal: "目標：讓讀者看見她的堅持與努力！",
-    verbs: ["翻閱","閃爍","揉搓","朗讀","抄寫","照耀","嘆氣","咀嚼"],
+    title: "樂觀",
+    task: '任務：描寫一個考試失敗後仍然積極面對的同學，表現出<span class="keyword">樂觀</span>的性格。',
+    goal: "目標：讓讀者感受到他面對挫折時的正面力量！",
+    verbs: ["微笑","拍拍","鼓勵","哭泣","握緊","埋怨","振作","嘆息"],
     segments: [
-      "「深夜裡，小美不停地",
-      "課本和筆記，檯燈在桌上微微",
-      "，她困得不斷",
-      "雙眼，但還是堅持複習到最後。」"
+      "「看到不理想的成績，小強沒有沮喪，反而",
+      "著對自己說加油，他",
+      "拳頭暗暗下定決心，還主動",
+      "其他考差了的同學。」"
     ],
-    answers: ["翻閱","閃爍","揉搓"],
-    hints: [
-      "第①格：一頁一頁地看書本的動作……",
-      "第②格：燈光一明一暗的樣子……",
-      "第③格：眼睛累了用手來回搓的動作……"
-    ]
+    answers: ["微笑","握緊","鼓勵"]
   },
   {
-    title: "海邊黃昏",
-    task: '任務：描寫一幅美麗的海邊日落景色，表現出<span class="keyword">寧靜</span>。',
-    goal: "目標：讓讀者彷彿置身在寧靜美麗的海邊！",
-    verbs: ["沉入","映照","拍打","閃耀","飄蕩","奔騰","吹拂","染紅"],
+    title: "勤勞",
+    task: '任務：描寫一個每天一大早就起來做家務的孩子，表現出<span class="keyword">勤勞</span>的性格。',
+    goal: "目標：讓讀者看到一個主動分擔家務的好孩子！",
+    verbs: ["擦拭","掃除","摺疊","整理","搬運","沖洗","晾曬","收拾"],
     segments: [
-      "「傍晚時分，夕陽慢慢",
-      "海平線，金色的光芒",
-      "在波光粼粼的海面上，海浪輕輕地",
-      "著沙灘。」"
+      "「天剛亮，小玲已經開始",
+      "桌椅，接著認真地",
+      "地上的灰塵，最後把洗好的衣服一件件",
+      "整齊，才安心去上學。」"
     ],
-    answers: ["沉入","映照","拍打"],
-    hints: [
-      "第①格：太陽往下落到海裡的動作……",
-      "第②格：光照在海面上反射出來的效果……",
-      "第③格：海浪碰到沙灘的動作，輕柔地……"
-    ]
+    answers: ["擦拭","掃除","摺疊"]
   }
 ];
 
 // ══════════════════════════════════════════
-//  GAME STATE
+//  STATE
 // ══════════════════════════════════════════
 let currentLevel = 0;
 let score = 0;
 let totalBlanks = 0;
 let correctBlanks = 0;
 let selectedVerb = null;
-let filledSlots = {};   // slotIndex -> verb
-let hintsUsed = 0;
-const maxHintsPerLevel = 1;
-let levelHintUsed = false;
-let currentHintIndex = 0;
+let filledSlots = {};
+let levelResults = [];   // per-level: null = not attempted, true = perfect, false = attempted
+let levelLocked = [];    // true after submit
 
 // ══════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════
-createBubbles();
-
-function createBubbles() {
-  const container = document.getElementById('bubbles');
+(function createBubbles() {
+  const c = document.getElementById('bubbles');
   const colors = ['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FECA57','#FF9FF3','#54A0FF','#F97F51'];
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 18; i++) {
     const b = document.createElement('div');
     b.className = 'bubble';
-    const size = Math.random() * 80 + 20;
-    b.style.width = size + 'px';
-    b.style.height = size + 'px';
-    b.style.left = Math.random() * 100 + '%';
-    b.style.background = colors[Math.floor(Math.random() * colors.length)];
-    b.style.animationDuration = (Math.random() * 15 + 10) + 's';
-    b.style.animationDelay = (Math.random() * 10) + 's';
-    container.appendChild(b);
+    const s = Math.random() * 70 + 20;
+    b.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${colors[i%8]};animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s`;
+    c.appendChild(b);
   }
+})();
+
+function buildDots() {
+  const wrap = document.getElementById('level-dots');
+  wrap.innerHTML = '';
+  levels.forEach((_, i) => {
+    const d = document.createElement('span');
+    d.className = 'dot' + (i === currentLevel ? ' active' : '') + (levelResults[i] === true ? ' done' : '');
+    wrap.appendChild(d);
+  });
 }
 
 // ══════════════════════════════════════════
@@ -784,49 +467,53 @@ function createBubbles() {
 // ══════════════════════════════════════════
 function startGame() {
   document.getElementById('welcome-screen').style.display = 'none';
-  document.getElementById('game-screen').style.display = 'block';
-  document.getElementById('result-screen').style.display = 'none';
-  currentLevel = 0;
-  score = 0;
-  totalBlanks = 0;
-  correctBlanks = 0;
+  document.getElementById('game-screen').classList.add('active');
+  document.getElementById('result-screen').classList.remove('active');
+  currentLevel = 0; score = 0; totalBlanks = 0; correctBlanks = 0;
+  levelResults = levels.map(() => null);
+  levelLocked = levels.map(() => false);
   document.getElementById('score-num').textContent = '0';
   loadLevel();
 }
 
 function restartGame() {
-  document.getElementById('result-screen').style.display = 'none';
-  document.getElementById('welcome-screen').style.display = 'block';
+  document.getElementById('result-screen').classList.remove('active');
+  document.getElementById('welcome-screen').style.display = '';
 }
 
 function loadLevel() {
   const lvl = levels[currentLevel];
+  const locked = levelLocked[currentLevel];
   selectedVerb = null;
-  filledSlots = {};
-  levelHintUsed = false;
-  currentHintIndex = 0;
+  if (!locked) filledSlots = {};
 
-  // Update header
-  document.getElementById('level-badge').textContent = `第 ${currentLevel + 1} 關`;
+  // Header
+  document.getElementById('level-badge').textContent = `第 ${currentLevel + 1} 關：${lvl.title}`;
   document.getElementById('progress-fill').style.width = ((currentLevel) / levels.length * 100) + '%';
   document.getElementById('score-num').textContent = score;
+  buildDots();
 
-  // Task
+  // Task & Goal
   document.getElementById('task-text').innerHTML = lvl.task;
-
-  // Goal
   document.getElementById('goal-text').textContent = lvl.goal;
 
-  // Verbs — shuffle
-  const shuffled = [...lvl.verbs].sort(() => Math.random() - 0.5);
+  // Verbs
+  const shuffled = locked ? [...lvl.verbs] : [...lvl.verbs].sort(() => Math.random() - 0.5);
   const grid = document.getElementById('verb-grid');
   grid.innerHTML = '';
   shuffled.forEach((v, i) => {
     const btn = document.createElement('button');
-    btn.className = `verb-btn verb-color-${i % 8}`;
+    btn.className = `verb-btn vc${i % 8}`;
     btn.textContent = v;
     btn.dataset.verb = v;
-    btn.onclick = () => selectVerb(btn);
+    if (locked) {
+      btn.classList.add('used');
+      btn.style.pointerEvents = 'none';
+    } else {
+      btn.onclick = () => selectVerb(btn);
+      // Mark used if already filled
+      if (Object.values(filledSlots).includes(v)) btn.classList.add('used');
+    }
     grid.appendChild(btn);
   });
 
@@ -839,25 +526,42 @@ function loadLevel() {
     area.appendChild(span);
     if (i < lvl.answers.length) {
       const slot = document.createElement('span');
-      slot.className = 'blank-slot pulse';
+      slot.className = 'blank-slot' + (!locked ? ' pulse' : '');
       slot.dataset.index = i;
       slot.innerHTML = `<span class="blank-num">${i + 1}</span>`;
-      slot.onclick = () => clickSlot(slot);
+      if (locked) {
+        // Show results
+        const savedAnswer = lvl._userAnswers ? lvl._userAnswers[i] : lvl.answers[i];
+        const isCorrect = savedAnswer === lvl.answers[i];
+        slot.classList.add('filled', isCorrect ? 'correct' : 'wrong');
+        slot.innerHTML = `<span class="blank-num">${i + 1}</span>${savedAnswer}`;
+        slot.style.pointerEvents = 'none';
+      } else {
+        slot.onclick = () => clickSlot(slot);
+      }
       area.appendChild(slot);
     }
   });
 
-  // Buttons
-  document.getElementById('check-btn').disabled = true;
-  document.getElementById('check-btn').style.display = '';
-  document.getElementById('next-btn').style.display = 'none';
-  document.getElementById('hint-btn').disabled = false;
+  // Nav buttons
+  document.getElementById('btn-prev').disabled = currentLevel === 0;
+  if (locked) {
+    document.getElementById('btn-check').style.display = 'none';
+    document.getElementById('btn-next').style.display = '';
+    if (currentLevel >= levels.length - 1 && levelLocked.every(Boolean)) {
+      document.getElementById('btn-next').textContent = '查看成績 🏆';
+    } else {
+      document.getElementById('btn-next').textContent = '下一題 ➜';
+    }
+  } else {
+    document.getElementById('btn-check').style.display = '';
+    document.getElementById('btn-check').disabled = true;
+    document.getElementById('btn-next').style.display = 'none';
+  }
 
-  // Animate card in
-  document.querySelector('.game-card').style.animation = 'none';
-  requestAnimationFrame(() => {
-    document.querySelector('.game-card').style.animation = 'fadeInUp 0.5s ease';
-  });
+  // Animate
+  document.querySelector('.main-area').style.animation = 'none';
+  requestAnimationFrame(() => { document.querySelector('.main-area').style.animation = 'fadeInUp 0.4s ease'; });
 }
 
 // ══════════════════════════════════════════
@@ -865,15 +569,8 @@ function loadLevel() {
 // ══════════════════════════════════════════
 function selectVerb(btn) {
   if (btn.classList.contains('used')) return;
-
-  // Deselect previous
   document.querySelectorAll('.verb-btn.selected').forEach(b => b.classList.remove('selected'));
-
-  if (selectedVerb === btn.dataset.verb) {
-    selectedVerb = null;
-    return;
-  }
-
+  if (selectedVerb === btn.dataset.verb) { selectedVerb = null; return; }
   btn.classList.add('selected');
   selectedVerb = btn.dataset.verb;
   playSound('select');
@@ -881,41 +578,25 @@ function selectVerb(btn) {
 
 function clickSlot(slot) {
   const idx = parseInt(slot.dataset.index);
-
-  // If slot has a verb, remove it
   if (filledSlots[idx]) {
-    const removedVerb = filledSlots[idx];
+    const removed = filledSlots[idx];
     delete filledSlots[idx];
     slot.classList.remove('filled');
     slot.classList.add('pulse');
     slot.innerHTML = `<span class="blank-num">${idx + 1}</span>`;
-
-    // Re-enable the verb button
-    document.querySelectorAll('.verb-btn').forEach(b => {
-      if (b.dataset.verb === removedVerb) {
-        b.classList.remove('used');
-      }
-    });
+    document.querySelectorAll('.verb-btn').forEach(b => { if (b.dataset.verb === removed) b.classList.remove('used'); });
     playSound('remove');
     updateCheckBtn();
     return;
   }
-
-  // If a verb is selected, place it
   if (selectedVerb) {
     filledSlots[idx] = selectedVerb;
     slot.classList.add('filled');
     slot.classList.remove('pulse');
     slot.innerHTML = `<span class="blank-num">${idx + 1}</span>${selectedVerb}`;
-
-    // Mark verb button as used
     document.querySelectorAll('.verb-btn').forEach(b => {
-      if (b.dataset.verb === selectedVerb) {
-        b.classList.add('used');
-        b.classList.remove('selected');
-      }
+      if (b.dataset.verb === selectedVerb) { b.classList.add('used'); b.classList.remove('selected'); }
     });
-
     selectedVerb = null;
     playSound('place');
     updateCheckBtn();
@@ -924,231 +605,128 @@ function clickSlot(slot) {
 
 function updateCheckBtn() {
   const lvl = levels[currentLevel];
-  const allFilled = Object.keys(filledSlots).length === lvl.answers.length;
-  document.getElementById('check-btn').disabled = !allFilled;
+  document.getElementById('btn-check').disabled = Object.keys(filledSlots).length !== lvl.answers.length;
 }
 
 // ══════════════════════════════════════════
-//  CHECK ANSWERS
+//  CHECK
 // ══════════════════════════════════════════
 function checkAnswers() {
   const lvl = levels[currentLevel];
   let correct = 0;
   const slots = document.querySelectorAll('.blank-slot');
   const details = [];
+  const userAnswers = [];
 
   slots.forEach((slot, i) => {
-    const userAnswer = filledSlots[i];
-    const correctAnswer = lvl.answers[i];
-    if (userAnswer === correctAnswer) {
+    const ua = filledSlots[i];
+    const ca = lvl.answers[i];
+    userAnswers.push(ua);
+    if (ua === ca) {
       slot.classList.add('correct');
       correct++;
-      details.push(`<span class="correct-mark">✓ 第${i+1}格「${userAnswer}」正確！</span>`);
+      details.push(`<span class="correct-mark">✓ 第${i+1}格「${ua}」正確！</span>`);
     } else {
       slot.classList.add('wrong');
-      details.push(`<span class="wrong-mark">✗ 第${i+1}格 你填了「${userAnswer}」，正確答案是「${correctAnswer}」</span>`);
+      details.push(`<span class="wrong-mark">✗ 第${i+1}格 你填了「${ua}」，正確答案是「${ca}」</span>`);
     }
+    slot.style.pointerEvents = 'none';
   });
 
+  lvl._userAnswers = userAnswers;
   totalBlanks += lvl.answers.length;
   correctBlanks += correct;
-
-  // Calculate level score
-  const levelScore = correct * 10;
-  score += levelScore;
+  const pts = correct * 10;
+  score += pts;
   document.getElementById('score-num').textContent = score;
 
-  // Show feedback
-  const allCorrect = correct === lvl.answers.length;
-  showFeedback(allCorrect, correct, lvl.answers.length, details, levelScore);
+  levelResults[currentLevel] = correct === lvl.answers.length;
+  levelLocked[currentLevel] = true;
+  buildDots();
 
-  // Disable check, show next
-  document.getElementById('check-btn').style.display = 'none';
-  document.getElementById('next-btn').style.display = '';
-  document.getElementById('hint-btn').disabled = true;
-
-  // Disable verb buttons
-  document.querySelectorAll('.verb-btn').forEach(b => {
-    b.style.pointerEvents = 'none';
-  });
-  document.querySelectorAll('.blank-slot').forEach(s => {
-    s.style.pointerEvents = 'none';
-  });
-
-  if (allCorrect) {
-    playSound('success');
-    spawnConfetti();
-  } else {
-    playSound('fail');
+  document.getElementById('btn-check').style.display = 'none';
+  document.getElementById('btn-next').style.display = '';
+  if (currentLevel >= levels.length - 1 && levelLocked.every(Boolean)) {
+    document.getElementById('btn-next').textContent = '查看成績 🏆';
   }
+  document.querySelectorAll('.verb-btn').forEach(b => b.style.pointerEvents = 'none');
+
+  const allCorrect = correct === lvl.answers.length;
+  showFeedback(allCorrect, correct, lvl.answers.length, details, pts);
+  if (allCorrect) { playSound('success'); spawnConfetti(); } else { playSound('fail'); }
 }
 
 function showFeedback(allCorrect, correct, total, details, pts) {
-  const overlay = document.getElementById('feedback-overlay');
   const card = document.getElementById('feedback-card');
-
   const icon = allCorrect ? '🎉' : (correct > 0 ? '💪' : '😅');
   const title = allCorrect ? '完美通關！' : (correct > 0 ? '差一點點！' : '再接再厲！');
-  const msg = allCorrect
-    ? `太棒了！全部答對，獲得 ${pts} 分！`
-    : `答對了 ${correct}/${total} 題，獲得 ${pts} 分。`;
-  const btnClass = allCorrect ? 'fb-btn-success' : 'fb-btn-retry';
-  const btnText = allCorrect ? '太好了！' : '知道了！';
-
+  const msg = allCorrect ? `太棒了！全部答對，獲得 ${pts} 分！` : `答對了 ${correct}/${total} 題，獲得 ${pts} 分。`;
+  const btnCls = allCorrect ? 'fb-btn-success' : 'fb-btn-retry';
   card.innerHTML = `
     <div class="fb-icon">${icon}</div>
-    <h3>${title}</h3>
-    <p>${msg}</p>
+    <h3>${title}</h3><p>${msg}</p>
     <div class="fb-detail">${details.join('<br>')}</div>
-    <button class="fb-btn ${btnClass}" onclick="closeFeedback()">${btnText}</button>
-  `;
-  overlay.classList.add('show');
+    <button class="fb-btn ${btnCls}" onclick="closeFeedback()">${allCorrect ? '太好了！' : '知道了！'}</button>`;
+  document.getElementById('feedback-overlay').classList.add('show');
 }
 
-function closeFeedback() {
-  document.getElementById('feedback-overlay').classList.remove('show');
-}
+function closeFeedback() { document.getElementById('feedback-overlay').classList.remove('show'); }
 
 // ══════════════════════════════════════════
 //  NAVIGATION
 // ══════════════════════════════════════════
+function prevLevel() {
+  if (currentLevel > 0) { currentLevel--; loadLevel(); }
+}
+
 function nextLevel() {
   closeFeedback();
-  currentLevel++;
-  if (currentLevel >= levels.length) {
+  if (currentLevel >= levels.length - 1 && levelLocked.every(Boolean)) {
     showResults();
   } else {
+    currentLevel = Math.min(currentLevel + 1, levels.length - 1);
     loadLevel();
   }
 }
 
 function resetLevel() {
+  if (levelLocked[currentLevel]) return;
+  filledSlots = {};
+  selectedVerb = null;
   loadLevel();
   playSound('select');
 }
 
 function showResults() {
-  document.getElementById('game-screen').style.display = 'none';
-  document.getElementById('result-screen').style.display = 'block';
-
+  document.getElementById('game-screen').classList.remove('active');
+  document.getElementById('result-screen').classList.add('active');
   const maxScore = levels.reduce((s, l) => s + l.answers.length * 10, 0);
   const pct = Math.round(score / maxScore * 100);
-
   document.getElementById('final-score').textContent = `總分：${score} / ${maxScore} 分`;
-
-  // Stars
-  let starCount = 0;
-  if (pct >= 90) starCount = 3;
-  else if (pct >= 60) starCount = 2;
-  else if (pct >= 30) starCount = 1;
-
-  let starsHtml = '';
-  for (let i = 0; i < 3; i++) {
-    starsHtml += i < starCount ? '⭐' : '<span class="star-empty">⭐</span>';
-  }
-  document.getElementById('final-stars').innerHTML = starsHtml;
-
-  const messages = [
-    "加油，多練習就會進步的！",
-    "不錯的表現，繼續努力！",
-    "很好！你對動詞的理解越來越好了！",
-    "太厲害了！你是動詞小達人！"
-  ];
-  document.getElementById('result-detail').innerHTML = `
-    正確率：${pct}%<br>
-    ${messages[starCount]}<br>
-    答對 ${correctBlanks} / ${totalBlanks} 個空格
-  `;
-
-  if (starCount >= 2) spawnConfetti();
+  let stars = pct >= 90 ? 3 : pct >= 60 ? 2 : pct >= 30 ? 1 : 0;
+  document.getElementById('final-stars').innerHTML = Array.from({length:3}, (_,i) => i < stars ? '⭐' : '<span class="star-empty">⭐</span>').join('');
+  const msgs = ["加油，多練習就會進步的！","不錯的表現，繼續努力！","很好！你對動詞的理解越來越好了！","太厲害了！你是動詞小達人！"];
+  document.getElementById('result-detail').innerHTML = `正確率：${pct}%<br>${msgs[stars]}<br>答對 ${correctBlanks} / ${totalBlanks} 個空格`;
+  if (stars >= 2) spawnConfetti();
 }
 
 // ══════════════════════════════════════════
-//  HINTS
-// ══════════════════════════════════════════
-function showHint() {
-  if (levelHintUsed) return;
-
-  const lvl = levels[currentLevel];
-  // Find first empty slot
-  let hintIdx = -1;
-  for (let i = 0; i < lvl.answers.length; i++) {
-    if (!filledSlots[i]) { hintIdx = i; break; }
-  }
-  if (hintIdx === -1) {
-    // Find first wrong slot
-    for (let i = 0; i < lvl.answers.length; i++) {
-      if (filledSlots[i] !== lvl.answers[i]) { hintIdx = i; break; }
-    }
-  }
-  if (hintIdx === -1) return;
-
-  const popup = document.getElementById('hint-popup');
-  popup.textContent = '💡 ' + lvl.hints[hintIdx];
-  popup.classList.add('show');
-  levelHintUsed = true;
-  document.getElementById('hint-btn').disabled = true;
-
-  setTimeout(() => { popup.classList.remove('show'); }, 4000);
-  playSound('hint');
-}
-
-// ══════════════════════════════════════════
-//  SOUNDS (Web Audio API — simple beeps)
+//  SOUNDS
 // ══════════════════════════════════════════
 let audioCtx = null;
-function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function playSound(type) {
+function getAC() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+function playSound(t) {
   try {
-    const ctx = getAudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    switch(type) {
-      case 'select':
-        osc.frequency.value = 600;
-        gain.gain.value = 0.08;
-        osc.start(); osc.stop(ctx.currentTime + 0.08);
-        break;
-      case 'place':
-        osc.frequency.value = 800;
-        gain.gain.value = 0.1;
-        osc.start(); osc.stop(ctx.currentTime + 0.1);
-        break;
-      case 'remove':
-        osc.frequency.value = 400;
-        gain.gain.value = 0.08;
-        osc.start(); osc.stop(ctx.currentTime + 0.1);
-        break;
-      case 'success':
-        osc.type = 'triangle';
-        osc.frequency.value = 523;
-        gain.gain.value = 0.12;
-        osc.start();
-        osc.frequency.setValueAtTime(659, ctx.currentTime + 0.15);
-        osc.frequency.setValueAtTime(784, ctx.currentTime + 0.3);
-        osc.stop(ctx.currentTime + 0.5);
-        break;
-      case 'fail':
-        osc.type = 'sawtooth';
-        osc.frequency.value = 300;
-        gain.gain.value = 0.08;
-        osc.start();
-        osc.frequency.setValueAtTime(250, ctx.currentTime + 0.15);
-        osc.stop(ctx.currentTime + 0.3);
-        break;
-      case 'hint':
-        osc.type = 'sine';
-        osc.frequency.value = 880;
-        gain.gain.value = 0.06;
-        osc.start(); osc.stop(ctx.currentTime + 0.15);
-        break;
+    const c = getAC(), o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    switch(t) {
+      case 'select': o.frequency.value=600; g.gain.value=0.08; o.start(); o.stop(c.currentTime+0.08); break;
+      case 'place': o.frequency.value=800; g.gain.value=0.1; o.start(); o.stop(c.currentTime+0.1); break;
+      case 'remove': o.frequency.value=400; g.gain.value=0.08; o.start(); o.stop(c.currentTime+0.1); break;
+      case 'success': o.type='triangle'; o.frequency.value=523; g.gain.value=0.12; o.start();
+        o.frequency.setValueAtTime(659,c.currentTime+0.15); o.frequency.setValueAtTime(784,c.currentTime+0.3); o.stop(c.currentTime+0.5); break;
+      case 'fail': o.type='sawtooth'; o.frequency.value=300; g.gain.value=0.08; o.start();
+        o.frequency.setValueAtTime(250,c.currentTime+0.15); o.stop(c.currentTime+0.3); break;
     }
   } catch(e) {}
 }
@@ -1158,26 +736,17 @@ function playSound(type) {
 // ══════════════════════════════════════════
 function spawnConfetti() {
   const colors = ['#FF6B6B','#4ECDC4','#FECA57','#FF9FF3','#54A0FF','#F97F51','#00B894','#6C5CE7'];
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 50; i++) {
     const el = document.createElement('div');
     el.className = 'confetti-piece';
-    el.style.left = Math.random() * 100 + 'vw';
-    el.style.top = '-10px';
-    el.style.background = colors[Math.floor(Math.random() * colors.length)];
-    el.style.width = (Math.random() * 10 + 5) + 'px';
-    el.style.height = (Math.random() * 10 + 5) + 'px';
-    el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-    el.style.transform = `rotate(${Math.random()*360}deg)`;
+    el.style.cssText = `left:${Math.random()*100}vw;top:-10px;background:${colors[i%8]};width:${Math.random()*10+5}px;height:${Math.random()*10+5}px;border-radius:${Math.random()>.5?'50%':'2px'}`;
     document.body.appendChild(el);
-
-    const duration = Math.random() * 2000 + 1500;
-    const endX = (Math.random() - 0.5) * 200;
+    const dur = Math.random()*2000+1500;
     el.animate([
-      { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
-      { transform: `translate(${endX}px, ${window.innerHeight + 20}px) rotate(${Math.random()*720}deg)`, opacity: 0 }
-    ], { duration, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' });
-
-    setTimeout(() => el.remove(), duration);
+      { transform:'translate(0,0) rotate(0deg)', opacity:1 },
+      { transform:`translate(${(Math.random()-.5)*200}px,${innerHeight+20}px) rotate(${Math.random()*720}deg)`, opacity:0 }
+    ], { duration:dur, easing:'cubic-bezier(0.25,0.46,0.45,0.94)' });
+    setTimeout(() => el.remove(), dur);
   }
 }
 </script>
